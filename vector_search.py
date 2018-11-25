@@ -47,7 +47,7 @@ def search(index, queries, k):
 	return result
 
 
+load_data()
+index = index_data()
 if __name__ == '__main__':
-	load_data()
-	index = index_data()
 	print(search(index, vec[[1, 2]], 4))
