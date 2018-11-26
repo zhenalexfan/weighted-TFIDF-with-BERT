@@ -1,15 +1,19 @@
 import mysql.connector
 import math
 
+MYSQL_HOST = 'localhost'
+MYSQL_USER = 'root'
+MYSQL_PASSWD = '12345678'
+MYSQL_DB = 'cs510'
 
-cnx = mysql.connector.connect(host='localhost', user='root', passwd='12345678', database='cs510')
+cnx = mysql.connector.connect(host=MYSQL_HOST, user=MYSQL_USER, passwd=MYSQL_PASSWD, database=MYSQL_DB)
 cursor = cnx.cursor()
 cursor.execute('select max(QA_id) from sentences')
 doc_count = cursor.fetchall()[0][0]
-print('Document size: %d' % doc_count)
+# print('Document size: %d' % doc_count)
 cursor.execute('select word, count from words')
 words = cursor.fetchall()
-print('Vocabulory size: %d' % len(words))
+# print('Vocabulory size: %d' % len(words))
 
 
 idf = {}
@@ -31,6 +35,16 @@ def count(qa_id, word):
 
 
 def search(query, num_results):
+	"""Search top `num_results` documents using string `query` based on TF-IDF model. If `num_results` 
+	is 0, the function returns all the results. 
+	
+	Args:
+	    query (str): a query input made of words seperated by spaces (' ')
+	    num_results (int): the number of results to return. 0 indicating all the results
+	
+	Returns:
+	    list: a list of documents indices ordered by relevance descendingly
+	"""
 	doc_score_map = {}
 	qwords = query.strip().split(' ')
 	for qword in qwords:
