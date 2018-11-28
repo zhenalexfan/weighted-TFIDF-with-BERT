@@ -56,7 +56,7 @@ for datum in data:
 				if word == '':
 					del sword[i]
 					del seq[i]
-			sentences.append(' '.join(sword))
+			sentences.append(' '.join(sword).strip().replace('\n', ' '))
 			seqs.append(seq)
 			print(stc)
 			print(seq)
@@ -67,11 +67,32 @@ for datum in data:
 		# print(np.array(cwords)[np.where(np.array(res) == 1)[0]])
 		# print('======')
 
-print('Printing %d sentences...' % len(sentences))
-with open('data/quad_train_sentences.txt', 'w', encoding='utf-8') as f:
-	f.writelines( "%s\n" % item for item in sentences)
+sentences = np.array(sentences)
+seqs = np.array(seqs)
+train_size = int(len(sentences) * 0.7)
+dev_size = int(len(sentences) * 0.2)
+test_size = int(len(sentences) * 0.1)
+train_indices = np.random.choice(list(range(len(sentences))), train_size, replace=False)
+dev_and_test_indices = list(set(range(len(sentences))) - set(train_indices))
+dev_indices = np.random.choice(dev_and_test_indices, dev_size, replace=False)
+test_indices = list(set(dev_and_test_indices) - set(dev_indices))
 
-print('Printing %d sequences...' % len(seqs))
-with open('data/quad_train_ask_or_not.txt', 'w') as f:
-	for seq in seqs:
-		f.write(' '.join(str(x) for x in seq) + '\n')
+
+def save_sentences(filename, sentences_):
+	print('Writing %d sentences to %s...' % (len(sentences_), filename))
+	with open('data/%s.txt' % filename, 'w', encoding='utf-8') as f:
+		for item in sentences_:
+			f.write(item + '\n')
+
+def save_labels(filename, seqs_):
+	print('Writing %d sequences to %s...' % (len(seqs_), filename))
+	with open('data/%s.txt' % filename, 'w') as f:
+		for s in seqs_:
+			f.write(' '.join(str(x) for x in s) + '\n')
+
+save_sentences('train-sentences', sentences[train_indices])
+save_labels('train-labels', seqs[train_indices])
+save_sentences('dev-sentences', sentences[dev_indices])
+save_labels('dev-labels', seqs[dev_indices])
+save_sentences('test-sentences', sentences[test_indices])
+save_labels('test-labels', seqs[test_indices])
