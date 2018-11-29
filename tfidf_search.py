@@ -59,7 +59,7 @@ def search(query, num_results):
 			doc = int(doc)
 			if doc not in doc_score_map.keys():
 				doc_score_map[doc] = 0
-			doc_score_map[doc] += 1 * idf[qword]
+			doc_score_map[doc] += 1 * idf[qword.lower()]
 	result = sorted(doc_score_map.items(), key=lambda kv: kv[1], reverse=True)
 	return [i[0] for i in result[:num_results]] if num_results > 0 else [i[0] for i in result]
 
