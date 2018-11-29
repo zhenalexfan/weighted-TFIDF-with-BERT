@@ -56,6 +56,8 @@ for datum in data:
 				if word == '':
 					del sword[i]
 					del seq[i]
+			if (len(seq) == 0):
+				continue
 			sentences.append(' '.join(sword).strip().replace('\n', ' '))
 			seqs.append(seq)
 			print(stc)
