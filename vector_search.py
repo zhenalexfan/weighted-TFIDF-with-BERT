@@ -6,7 +6,7 @@ import numpy as np
 verbose = False # set it to True when debugging 
 
 FILE_VEC = 'data/res.pkl'
-FILE_SUBSENTENCE = 'data/extend_mask_input.txt'
+FILE_SUBSENTENCE = 'data/extend_mask_input (1).txt'
 FILE_ALL_SENTENCE = 'data/All Sentences.txt'
 
 def load_data():
