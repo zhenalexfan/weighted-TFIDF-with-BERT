@@ -5,8 +5,7 @@ import numpy as np
 # 配置、句子向量文件的位置等）是否正确. 
 
 # 利用TF-IDF搜索
-# 利用TF-IDF搜索输入一个字串, 搜索出来的index是文档的index, 也就是对应sentences
-# 这个表里面的QA_idx字段的数据. 
+# 利用TF-IDF搜索输入一个字串, 搜索出句子的index, 也就是sentence表里面的id字段的数据. 
 print('TF-IDF Model Search')
 import tfidf_search
 print(tfidf_search.search('what the fuck', 5), end='\n\n')
