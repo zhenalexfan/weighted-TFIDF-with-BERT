@@ -1,10 +1,11 @@
 import faiss
+from faiss import normalize_L2
 import joblib
 import numpy as np
 
 verbose = False # set it to True when debugging 
 
-FILE_VEC = 'data/sentVec.pkl'
+FILE_VEC = 'data/res.pkl'
 FILE_SUBSENTENCE = 'data/extend_mask_input.txt'
 FILE_ALL_SENTENCE = 'data/All Sentences.txt'
 
@@ -14,8 +15,7 @@ def load_data():
 	global sentences
 	print('Loading sentences and vectors. This may take a few minutes... ')
 	with open(FILE_VEC, 'rb') as f:
-		vec_ = joblib.load(f)
-	vec = np.array(vec_)[:, 0, :]
+		vec = joblib.load(f)
 	substcs = []
 	with open(FILE_SUBSENTENCE, 'r') as f:
 	    substcs_ = f.readlines()
@@ -33,7 +33,9 @@ def index_data():
 	d = len(vec[0])
 	index = faiss.IndexFlatIP(d)
 	# print(index.is_trained)
-	index.add(np.ascontiguousarray(vec))
+	n_vec = np.array(vec)
+	normalize_L2(n_vec)
+	index.add(n_vec)
 	print('Indexing data done. ')
 
 
@@ -45,15 +47,18 @@ def search(queries, num_results):
 	    num_results (int): the number of results to return
 	
 	Returns:
-	    list: a list of list of sentence indices, each row representing a bunch of search results for 
-	    a corresponding query vector in `queries` ordered by similarity descendingly
+	    list, list: a list of list of sentence indices, each row representing a bunch of search results for 
+	    a corresponding query vector in `queries` ordered by similarity descendingly, and its corresponding
+	    similarity values 
 	"""
 	if index is None:
 		print('Index is None, please index data before searching. ')
 		return
 	print('Searching %d similar items for %d queries...'
 		% (num_results, len(queries)))
-	D, I = index.search(np.ascontiguousarray(queries), num_results)
+	n_queries = np.array(queries, dtype='float32')
+	normalize_L2(n_queries)
+	D, I = index.search(n_queries, num_results)
 	result_sentences = [0 for _ in range(len(queries))]
 	result_similarities = [0 for _ in range(len(queries))]
 	for query in range(len(queries)):
@@ -76,4 +81,9 @@ load_data()
 index_data()
 if __name__ == '__main__':
 	verbose = True
-	print(search(vec[[1, 2]], 10))
+	print('vec 1:', substcs[1])
+	print('vec 2:', substcs[2])
+	result_indices, result_similarities = search(vec[[1, 2]], 4)
+	print(result_indices)
+	print(result_similarities)
+
