@@ -38,7 +38,7 @@ def print_colored_sentence(sent, label):
 	print()
 
 
-for datum in data[:1]:
+for datum in data[:]:
 	paras = datum['paragraphs']
 	for p in paras:
 		context = p['context']
@@ -52,9 +52,9 @@ for datum in data[:1]:
 				ans_start = int(ans['answer_start'])
 				ans_end = ans_start + len(ans_text)
 				tag_tokens_from_to(context_doc, res, ans_start, ans_end)
-				print(ans_text)
+				# print(ans_text)
 		for sent in context_doc.sents:
-			if len(sent) < SENTENCE_MIN_LEN or len(sent) >= SENTENCE_MAX_LEN:
+			if '\n' in sent.text or len(sent) < SENTENCE_MIN_LEN or len(sent) >= SENTENCE_MAX_LEN:
 				continue
 			label = res[sent.start : sent.end]
 			assert len(label) == len(sent)
