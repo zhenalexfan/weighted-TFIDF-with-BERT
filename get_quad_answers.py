@@ -1,8 +1,13 @@
 import json
 import string
 import numpy as np
-import nltk.data
+import spacy
 import re
+from termcolor import colored
+
+
+SENTENCE_MIN_LEN = 10
+SENTENCE_MAX_LEN = 128
 
 # load data
 data = []
@@ -10,67 +15,69 @@ with open('data/train-v2.0.json') as f:
 	data = json.load(f)['data']
 
 # tokenizer for splitting sentences
-tokenizer = nltk.data.load('/Users/alexfanchina/nltk_data/tokenizers/punkt/english.pickle')
-
-# table for removing puntuations
-table = str.maketrans({key: None if key != '\'' and key != '-' else key for key in string.punctuation})
+# tokenizer = nltk.data.load('/Users/alexfanchina/nltk_data/tokenizers/punkt/english.pickle')
+nlp = spacy.load('en')
 
 # use data
 sentences = []
-seqs = []
+labels = []
 
-for datum in data:
+def tag_tokens_from_to(doc, array, lo, hi):
+	assert len(doc) == len(array)
+	for i, token in enumerate(doc):
+		if token.idx >= lo and token.idx < hi:
+			array[i] = 1
+
+def print_colored_sentence(sent, label):
+	sent_ = sent.as_doc()
+	for token in sent_:
+		if label[token.i] == 0:
+			print(token.text_with_ws, end='')
+		else:
+			print(colored(token.text_with_ws, 'red'), end='')
+	print()
+
+
+for datum in data[:1]:
 	paras = datum['paragraphs']
 	for p in paras:
 		context = p['context']
-		cwords = context.split(' ')
-		res = [0 for _ in cwords]
-		if ('' in cwords): 
-			print('space')
+		context_doc = nlp(context)
+		res = [0 for _ in context_doc]
 		qas = p['qas']
 		for qa in qas:
 			answers = qa['answers']
 			for ans in answers:
 				ans_text = ans['text']
-				num_before = len(context[:context.find(ans_text)].split(' '))
-				num_words = len(ans_text.split(' '))
-				# print(ans_text)
-				# print(str(cwords[num_before - 1: num_before - 1 + num_words]))
-				for i in range(num_before - 1, num_before - 1 + num_words):
-					res[i] = 1
-		
-		stcs = tokenizer.tokenize(context)
-		delimiters = [context.find(x) for x in stcs]
-		delimiters.append(len(context))
-		word_start = 0
-		for i in range(len(delimiters) - 1):
-			start = delimiters[i]
-			end = delimiters[i + 1]
-			stc = stcs[i]
-			sword = stc.split(' ')
-			n = len(sword)
-			seq = res[word_start: word_start + n]
-			word_start += n
-
-			for i, word in enumerate(sword):
-				if word == '':
-					del sword[i]
-					del seq[i]
-			if (len(seq) == 0):
+				ans_start = int(ans['answer_start'])
+				ans_end = ans_start + len(ans_text)
+				tag_tokens_from_to(context_doc, res, ans_start, ans_end)
+				print(ans_text)
+		for sent in context_doc.sents:
+			if len(sent) < SENTENCE_MIN_LEN or len(sent) >= SENTENCE_MAX_LEN:
 				continue
-			sentences.append(' '.join(sword).strip().replace('\n', ' '))
-			seqs.append(seq)
-			print(stc)
-			print(seq)
-			# print(np.array(sword)[np.where(np.array(seq) == 1)[0]])
-			# print()
+			label = res[sent.start : sent.end]
+			assert len(label) == len(sent)
+			sentences.append(sent.text)
+			labels.append(label)
+			print_colored_sentence(sent, label)
+		print()
 
-		# print(context)
-		# print(np.array(cwords)[np.where(np.array(res) == 1)[0]])
-		# print('======')
+
+def save_sentences(filename, sentences_):
+	print('Writing %d sentences to %s...' % (len(sentences_), filename))
+	with open('data/SQuAD/%s.txt' % filename, 'w', encoding='utf-8') as f:
+		for item in sentences_:
+			f.write(item + '\n')
+
+def save_labels(filename, labels_):
+	print('Writing %d sequences to %s...' % (len(labels_), filename))
+	with open('data/SQuAD/%s.txt' % filename, 'w') as f:
+		for l in labels_:
+			f.write(' '.join(str(x) for x in l) + '\n')
 
 sentences = np.array(sentences)
-seqs = np.array(seqs)
+labels = np.array(labels)
 train_size = int(len(sentences) * 0.7)
 dev_size = int(len(sentences) * 0.2)
 test_size = int(len(sentences) * 0.1)
@@ -79,22 +86,9 @@ dev_and_test_indices = list(set(range(len(sentences))) - set(train_indices))
 dev_indices = np.random.choice(dev_and_test_indices, dev_size, replace=False)
 test_indices = list(set(dev_and_test_indices) - set(dev_indices))
 
-
-def save_sentences(filename, sentences_):
-	print('Writing %d sentences to %s...' % (len(sentences_), filename))
-	with open('data/%s.txt' % filename, 'w', encoding='utf-8') as f:
-		for item in sentences_:
-			f.write(item + '\n')
-
-def save_labels(filename, seqs_):
-	print('Writing %d sequences to %s...' % (len(seqs_), filename))
-	with open('data/%s.txt' % filename, 'w') as f:
-		for s in seqs_:
-			f.write(' '.join(str(x) for x in s) + '\n')
-
 save_sentences('train-sentences', sentences[train_indices])
-save_labels('train-labels', seqs[train_indices])
+save_labels('train-labels', labels[train_indices])
 save_sentences('dev-sentences', sentences[dev_indices])
-save_labels('dev-labels', seqs[dev_indices])
+save_labels('dev-labels', labels[dev_indices])
 save_sentences('test-sentences', sentences[test_indices])
-save_labels('test-labels', seqs[test_indices])
+save_labels('test-labels', labels[test_indices])
