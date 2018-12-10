@@ -38,7 +38,7 @@ def print_colored_sentence(sent, label):
 	print()
 
 
-for datum in data[:]:
+for idx, datum in enumerate(data[:]):
 	paras = datum['paragraphs']
 	for p in paras:
 		context = p['context']
@@ -57,11 +57,14 @@ for datum in data[:]:
 			if '\n' in sent.text or len(sent) < SENTENCE_MIN_LEN or len(sent) >= SENTENCE_MAX_LEN:
 				continue
 			label = res[sent.start : sent.end]
+			if 1 not in label:
+				continue
 			assert len(label) == len(sent)
 			sentences.append(sent.text)
 			labels.append(label)
-			print_colored_sentence(sent, label)
-		print()
+			# print_colored_sentence(sent, label)
+		# print()
+	print('Finish %d in %d' % (idx, len(data)))
 
 
 def save_sentences(filename, sentences_):
@@ -76,19 +79,23 @@ def save_labels(filename, labels_):
 		for l in labels_:
 			f.write(' '.join(str(x) for x in l) + '\n')
 
-sentences = np.array(sentences)
-labels = np.array(labels)
-train_size = int(len(sentences) * 0.7)
-dev_size = int(len(sentences) * 0.2)
-test_size = int(len(sentences) * 0.1)
-train_indices = np.random.choice(list(range(len(sentences))), train_size, replace=False)
-dev_and_test_indices = list(set(range(len(sentences))) - set(train_indices))
-dev_indices = np.random.choice(dev_and_test_indices, dev_size, replace=False)
-test_indices = list(set(dev_and_test_indices) - set(dev_indices))
 
-save_sentences('train-sentences', sentences[train_indices])
-save_labels('train-labels', labels[train_indices])
-save_sentences('dev-sentences', sentences[dev_indices])
-save_labels('dev-labels', labels[dev_indices])
-save_sentences('test-sentences', sentences[test_indices])
-save_labels('test-labels', labels[test_indices])
+save_sentences('sentences-remove-zeros', sentences)
+save_labels('labels-remove-zeros', labels)
+
+# sentences = np.array(sentences)
+# labels = np.array(labels)
+# train_size = int(len(sentences) * 0.7)
+# dev_size = int(len(sentences) * 0.2)
+# test_size = int(len(sentences) * 0.1)
+# train_indices = np.random.choice(list(range(len(sentences))), train_size, replace=False)
+# dev_and_test_indices = list(set(range(len(sentences))) - set(train_indices))
+# dev_indices = np.random.choice(dev_and_test_indices, dev_size, replace=False)
+# test_indices = list(set(dev_and_test_indices) - set(dev_indices))
+
+# save_sentences('train-sentences', sentences[train_indices])
+# save_labels('train-labels', labels[train_indices])
+# save_sentences('dev-sentences', sentences[dev_indices])
+# save_labels('dev-labels', labels[dev_indices])
+# save_sentences('test-sentences', sentences[test_indices])
+# save_labels('test-labels', labels[test_indices])
