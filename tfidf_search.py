@@ -1,7 +1,10 @@
 import mysql.connector
 import math
 
-verbose = False # set it to True when debugging 
+verbose = False # set it to True when debugging
+
+dataset = "original"
+# dataset = "SQuAD"
 
 MYSQL_HOST = 'localhost'
 MYSQL_USER = 'root'
@@ -24,14 +27,27 @@ for i, word in enumerate(words):
 # print(idf)
 
 
+def get_sentences_including(query_word, duplicate):
+	if dataset == "original":
+		cursor.execute('select * from words where word="%s"' % query_word)
+		row = cursor.fetchall()
+		if row is None or len(row) == 0:
+			return []
+		else:
+			row = row[0]
+		sentences = row[2].split(' ')
+		sentences = [int(i) for i in sentences]
+		return sentences if duplicate else list(set(sentences))
+
+
 def search(query, num_results, bool_tf=False):
-	"""Search top `num_results` sentences using string `query` based on TF-IDF model. If `num_results` 
-	is 0, the function returns all the results. 
-	
+	"""Search top `num_results` sentences using string `query` based on TF-IDF model. If `num_results`
+	is 0, the function returns all the results.
+
 	Args:
 	    query (str): a query input made of words seperated by spaces (' ')
 	    num_results (int): the number of results to return. 0 indicating all the results
-	
+
 	Returns:
 	    list: a list of sentences indices ordered by relevance descendingly
 	"""
@@ -39,23 +55,17 @@ def search(query, num_results, bool_tf=False):
 	qwords = query.strip().split(' ')
 	for qword in qwords:
 		qword = qword.lower()
-		cursor.execute('select * from words where word="%s"' % qword)
-		row = cursor.fetchall()
-		if row is None or len(row) == 0:
-			continue
-		else:
-			row = row[0]
-		sentences = row[2].split(' ')
-		# print(sentences)
-		if bool_tf:
-			sentences = set(sentences)
+		sentences = get_sentences_including(qword, duplicate=not bool_tf)
 		for sentence in sentences:
-			sentence = int(sentence)
 			if sentence not in sentence_score_map.keys():
 				sentence_score_map[sentence] = 0
 			sentence_score_map[sentence] += 1 * idf[qword]
 	result = sorted(sentence_score_map.items(), key=lambda kv: kv[1], reverse=True)
-	return [i[0] for i in result[:num_results]] if num_results > 0 else [i[0] for i in result], [i[1] for i in result[:num_results]] if num_results > 0 else [i[1] for i in result]
+	if num_results == 0:
+		num_results = len(results)
+	result_sent_indices = [i[0] for i in result[:num_results]]
+	result_sent_scores = [i[1] for i in result[:num_results]]
+	return result_sent_indices, result_sent_scores
 
 
 if __name__ == '__main__':

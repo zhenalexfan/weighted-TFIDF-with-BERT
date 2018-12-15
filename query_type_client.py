@@ -1,5 +1,4 @@
 from __future__ import print_function
-
 import grpc
 
 import query_pb2_grpc
