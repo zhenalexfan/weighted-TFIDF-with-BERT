@@ -41,7 +41,7 @@ def print_colored_sentence(sent, label):
 for idx, datum in enumerate(data[:]):
 	paras = datum['paragraphs']
 	for p in paras:
-		context = p['context']
+		context = p['context'].replace('(', ' ').replace(')', ' ')
 		context_doc = nlp(context)
 		res = [0 for _ in context_doc]
 		qas = p['qas']
@@ -59,10 +59,14 @@ for idx, datum in enumerate(data[:]):
 			label = res[sent.start : sent.end]
 			if 1 not in label:
 				continue
-			assert len(label) == len(sent)
-			sentences.append(sent.text)
+			# assert len(label) == len(sent)
+			sentences.append(sent.text_with_ws)
+			num_sent_tokens = len(nlp(sent.text_with_ws))
+			if len(label) != num_sent_tokens:
+				label = label[:num_sent_tokens]
 			labels.append(label)
-			# print_colored_sentence(sent, label)
+			print_colored_sentence(sent, label)
+			print(label)
 		# print()
 	print('Finish %d in %d' % (idx, len(data)))
 
@@ -80,8 +84,8 @@ def save_labels(filename, labels_):
 			f.write(' '.join(str(x) for x in l) + '\n')
 
 
-save_sentences('sentences-remove-zeros', sentences)
-save_labels('labels-remove-zeros', labels)
+# save_sentences('sentences-remove-zeros', sentences)
+# save_labels('labels-remove-zeros', labels)
 
 # sentences = np.array(sentences)
 # labels = np.array(labels)

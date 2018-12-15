@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package query;
+
+// The greeting service definition.
+service SentQuery {
+    // Sends a greeting
+    rpc ReturnResult(Query) returns (Reply) {}
+}
+
+// The request message containing the user's name.
+message Query { string user_input = 1; }
+
+// The response message containing the greetings
+message Reply { string sent_type = 1; }
