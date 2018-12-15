@@ -1,7 +1,6 @@
 import mysql.connector
 import math
-
-verbose = False # set it to True when debugging
+import logging
 
 dataset = "original"
 # dataset = "SQuAD"
@@ -20,27 +19,30 @@ cursor.execute('select word, count from words')
 words = cursor.fetchall()
 # print('Vocabulory size: %d' % len(words))
 
+def get_tokens_in(query):
+	return query.strip().split(' ')
 
-idf = {}
-for i, word in enumerate(words):
-	idf[word[0]] = math.log(2, sentence_count/word[1])
-# print(idf)
-
-
-def get_sentences_including(query_word, duplicate):
+def get_sentences_including(query_word, duplicate=True, return_idf=True):
 	if dataset == "original":
 		cursor.execute('select * from words where word="%s"' % query_word)
 		row = cursor.fetchall()
 		if row is None or len(row) == 0:
-			return []
+			return [], float('nan')
 		else:
 			row = row[0]
 		sentences = row[2].split(' ')
 		sentences = [int(i) for i in sentences]
-		return sentences if duplicate else list(set(sentences))
+		sentences_unique = list(set(sentences))
+		idf = math.log(2, sentence_count/len(sentences_unique))
+		if not duplicate:
+			sentences = sentences_unique
+		if return_idf:
+			return sentences, idf
+		else:
+			return sentences
 
 
-def search(query, num_results, bool_tf=False):
+def search(query, num_results, bool_tf=True):
 	"""Search top `num_results` sentences using string `query` based on TF-IDF model. If `num_results`
 	is 0, the function returns all the results.
 
@@ -52,14 +54,15 @@ def search(query, num_results, bool_tf=False):
 	    list: a list of sentences indices ordered by relevance descendingly
 	"""
 	sentence_score_map = {}
-	qwords = query.strip().split(' ')
+	qwords = get_tokens_in(query)
 	for qword in qwords:
 		qword = qword.lower()
-		sentences = get_sentences_including(qword, duplicate=not bool_tf)
+		sentences, idf = get_sentences_including(qword, duplicate=not bool_tf, return_idf=True)
+		logging.debug("qword: %-10s, \tidf: %.4f, \ttop 5: %s" % (qword, idf, str(sentences[:5])))
 		for sentence in sentences:
 			if sentence not in sentence_score_map.keys():
 				sentence_score_map[sentence] = 0
-			sentence_score_map[sentence] += 1 * idf[qword]
+			sentence_score_map[sentence] += 1 * idf
 	result = sorted(sentence_score_map.items(), key=lambda kv: kv[1], reverse=True)
 	if num_results == 0:
 		num_results = len(results)
@@ -69,11 +72,12 @@ def search(query, num_results, bool_tf=False):
 
 
 if __name__ == '__main__':
-	verbose = True
-	results = search("Go to a search site", 3)
+	logging.basicConfig(level=logging.DEBUG)
+	results = search("How to handle a 1.5 year old when hitting?", 3)
 	print(results)
+	print()
 	for i, r in enumerate(results[0]):
-		print('\n***** Result %d *****' % i)
+		print('***** Result %d *****' % i)
 		cursor.execute(
 			'select sentences from sentences where id = %d' % r)
 		ss = cursor.fetchall()
