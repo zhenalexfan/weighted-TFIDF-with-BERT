@@ -21,6 +21,7 @@ words = cursor.fetchall()
 
 def get_tokens_in(query):
 	return query.strip().split(' ')
+	# TODO: use spacy
 
 def get_sentences_including(query_word, duplicate=True, return_idf=True):
 	if dataset == "original":
