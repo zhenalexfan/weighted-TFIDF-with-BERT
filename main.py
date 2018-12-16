@@ -54,15 +54,17 @@ INSTRUCTIONS = """
     search.
 
     A command must starts with '!'.
-    Currently there are 3 different strategies for searching:
-      !to | !tfidf-only    \t: using plain TF-IDF model only for results;
-      !tb | !tfidf+bert    \t: using plainTF-IDF model for potential results and
-        refine them with BERT vectors similarity;
-      !wb | !weighted+bert \t: using weighted TF-IDF model for potential results
-        and refine them with BERT vectors similarity.
-    You can also use commands for:
-      !result-num <number> \t: changing maximum search result number;
-      !exit                \t: terminating this program.
+
+      Currently there are 3 different strategies for searching:
+        !to | !tfidf-only    \t: using plain TF-IDF model only for results;
+        !tb | !tfidf+bert    \t: using plainTF-IDF model for potential results and
+          refine them with BERT vectors similarity;
+        !wb | !weighted+bert \t: using weighted TF-IDF model for potential results
+          and refine them with BERT vectors similarity.
+
+      You can also use commands for:
+        !result-num <number> \t: changing maximum search result number;
+        !exit                \t: terminating this program.
 
     A query starts with anything except '!'.
 """
