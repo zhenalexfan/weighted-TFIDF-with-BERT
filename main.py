@@ -60,7 +60,7 @@ def search_wb(query):
         p_sents, p_scores = tfidf_search.search(query, RESULT_NUM*10, weighted=True)
         logging.debug('Potential results: \t%s, \nScore: \t%s' % (str(p_sents), str(p_scores)))
         sents, sims = bert_sim_search.search_in_range(query, RESULT_NUM, data_subset=p_sents)
-        logging.debug('Results: \t%s, \nSimilarity: \t%s' % (str(sents), str(scores)))
+        logging.debug('Results: \t%s, \nSimilarity: \t%s' % (str(sents), str(sims)))
     return sents
 
 
@@ -136,4 +136,6 @@ if __name__ == '__main__':
         for handler in logging.root.handlers[:]:
             logging.root.removeHandler(handler)
         logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.ERROR)
     main()
