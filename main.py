@@ -2,7 +2,7 @@ import query_type_client
 import tfidf_search
 import bert_sim_search
 
-query = input()
+query = input('Please input your query: ')
 query_type = query_type_client.get_query_type(query)
 if query_type == query_type_client.QUERY_TYPE_WORDS:
     sents, scores = tfidf_search.search(query, 10)

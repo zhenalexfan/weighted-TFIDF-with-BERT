@@ -20,6 +20,7 @@ nlp = spacy.load('en')
 
 # use data
 sentences = []
+questionables = []
 labels = []
 
 def tag_tokens_from_to(doc, array, lo, hi):
@@ -60,13 +61,16 @@ for idx, datum in enumerate(data[:]):
 			if 1 not in label:
 				continue
 			# assert len(label) == len(sent)
-			sentences.append(sent.text_with_ws)
-			num_sent_tokens = len(nlp(sent.text_with_ws))
+			sent_tokens = np.array([t.text for t in nlp(sent.text_with_ws)])
+			sentences.append('\t'.join(sent_tokens))
+			num_sent_tokens = len(sent_tokens)
 			if len(label) != num_sent_tokens:
 				label = label[:num_sent_tokens]
 			labels.append(label)
-			print_colored_sentence(sent, label)
-			print(label)
+			questionable_index_in_tokens = np.where(np.array(label) == 1)[0]
+			questionables.append('\t'.join(sent_tokens[questionable_index_in_tokens]))
+			# print_colored_sentence(sent, label)
+			# print(label)
 		# print()
 	print('Finish %d in %d' % (idx, len(data)))
 
@@ -84,7 +88,8 @@ def save_labels(filename, labels_):
 			f.write(' '.join(str(x) for x in l) + '\n')
 
 
-# save_sentences('sentences-remove-zeros', sentences)
+save_sentences('sentences-remove-zeros-tab-split', sentences)
+# save_sentences('questionables-remove-zeros', questionables)
 # save_labels('labels-remove-zeros', labels)
 
 # sentences = np.array(sentences)

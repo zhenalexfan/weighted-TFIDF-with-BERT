@@ -1,7 +1,9 @@
 import mysql.connector
 import math
 import questionable
+import spacy
 import logging
+import re
 
 # dataset = "original"
 dataset = "SQuAD"
@@ -29,10 +31,14 @@ sentence_count = cursor.fetchall()[0][0]
 cursor.execute('select word, count from %s' % MYSQL_WORDS_TABLE)
 words = cursor.fetchall()
 # print('Vocabulory size: %d' % len(words))
+nlp = spacy.load('en')
 
 def get_tokens_in(query):
-	return query.strip().split(' ')
-	# TODO: use spacy
+	sentence = '\t'.join([t.text for t in nlp(query)])
+	words = re.sub(r'[^\w\s]', "", sentence).split('\t')
+	words = list(filter(None, words))
+	words = [word.lower() for word in words]
+	return words
 
 def get_sentences_including(query_word, duplicate=True, return_idf=True):
 	cursor.execute('select * from %s where word="%s"' % (MYSQL_WORDS_TABLE, query_word))
@@ -69,7 +75,6 @@ def search(query, num_results, bool_tf=True, weighted=True):
 	sentence_score_map = {}
 	qwords = get_tokens_in(query)
 	for qword in qwords:
-		qword = qword.lower()
 		sentences, idf = get_sentences_including(qword, duplicate=not bool_tf, return_idf=True)
 		logging.debug("qword: %-10s, \tidf: %.4f, \ttop 5: %s" % (qword, idf, str(sentences[:5])))
 		for sentence in sentences:
@@ -87,7 +92,7 @@ def search(query, num_results, bool_tf=True, weighted=True):
 
 if __name__ == '__main__':
 	logging.basicConfig(level=logging.DEBUG)
-	results = search("The competition began on August 2, 1955, when the Soviet Union responded", 3)
+	results = search("The competition began on August 2, 1955, when the Soviet Union responded", 3, weighted=False)
 	print(results)
 	print()
 	for i, r in enumerate(results[0]):
