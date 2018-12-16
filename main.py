@@ -2,6 +2,7 @@ import query_type_client
 import tfidf_search
 import bert_sim_search
 import logging
+import argparse
 
 STRATEGY_TO = "PLAIN TF-IDF ONLY"
 STRATEGY_TB = "PLAIN TF-IDF + BERT"
@@ -38,10 +39,13 @@ def search_tb(query):
     if query_type == query_type_client.QUERY_TYPE_WORDS:
         print('Searching "%s" with PLAIN TF-IDF...' % truncate(query))
         sents, scores = tfidf_search.search(query, RESULT_NUM, weighted=False)
+        logging.debug('Results: \t%s, \nScore: \t%s' % (str(sents), str(scores)))
     elif query_type == query_type_client.QUERY_TYPE_SENTENCE:
         print('Searching "%s" with PLAIN TF-IDF + BERT...' % truncate(query))
         p_sents, p_scores = tfidf_search.search(query, RESULT_NUM*10, weighted=False)
+        logging.debug('Potential results: \t%s, \nScore: \t%s' % (str(p_sents), str(p_scores)))
         sents, sims = bert_sim_search.search_in_range(query, RESULT_NUM, data_subset=p_sents)
+        logging.debug('Results: \t%s, \nSimilarity: \t%s' % (str(sents), str(scores)))
     return sents
 
 
@@ -50,10 +54,13 @@ def search_wb(query):
     if query_type == query_type_client.QUERY_TYPE_WORDS:
         print('Searching "%s" with WEIGHTED TF-IDF...' % truncate(query))
         sents, scores = tfidf_search.search(query, RESULT_NUM, weighted=True)
+        logging.debug('Results: \t%s, \nScore: \t%s' % (str(sents), str(scores)))
     elif query_type == query_type_client.QUERY_TYPE_SENTENCE:
         print('Searching "%s" with WEIGHTED TF-IDF + BERT...' % truncate(query))
         p_sents, p_scores = tfidf_search.search(query, RESULT_NUM*10, weighted=True)
+        logging.debug('Potential results: \t%s, \nScore: \t%s' % (str(p_sents), str(p_scores)))
         sents, sims = bert_sim_search.search_in_range(query, RESULT_NUM, data_subset=p_sents)
+        logging.debug('Results: \t%s, \nSimilarity: \t%s' % (str(sents), str(scores)))
     return sents
 
 
@@ -113,6 +120,7 @@ def main():
                 sents = search_wb(query)
             print()
 
+            logging.debug(str(sents))
             if len(sents) == 0:
                 print('Ooops, nothing found.\n')
             else:
@@ -121,5 +129,11 @@ def main():
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true")
+    args = parser.parse_args()
+    if args.verbose:
+        for handler in logging.root.handlers[:]:
+            logging.root.removeHandler(handler)
+        logging.basicConfig(level=logging.DEBUG)
     main()
