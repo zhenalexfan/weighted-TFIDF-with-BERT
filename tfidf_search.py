@@ -1,5 +1,6 @@
 import mysql.connector
 import math
+import questionable
 import logging
 
 # dataset = "original"
@@ -54,7 +55,7 @@ def get_sentences_including(query_word, duplicate=True, return_idf=True):
 		return sentences
 
 
-def search(query, num_results, bool_tf=True):
+def search(query, num_results, bool_tf=True, weighted=True):
 	"""Search top `num_results` sentences using string `query` based on TF-IDF model. If `num_results`
 	is 0, the function returns all the results.
 
@@ -74,7 +75,8 @@ def search(query, num_results, bool_tf=True):
 		for sentence in sentences:
 			if sentence not in sentence_score_map.keys():
 				sentence_score_map[sentence] = 0
-			sentence_score_map[sentence] += 1 * idf
+			coeff = 2 if (weighted and questionable.is_in_questionable_part(sentence, qword)) else 1
+			sentence_score_map[sentence] += coeff * idf
 	result = sorted(sentence_score_map.items(), key=lambda kv: kv[1], reverse=True)
 	if num_results == 0:
 		num_results = len(results)

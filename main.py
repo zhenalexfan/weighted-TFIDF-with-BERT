@@ -9,5 +9,5 @@ if query_type == query_type_client.QUERY_TYPE_WORDS:
     print(sents, scores)
 elif query_type == query_type_client.QUERY_TYPE_SENTENCE:
     p_sents, p_scores = tfidf_search.search(query, 100)
-    # sents, sims = bert_sim_search.search_in_range(query, 10, data_subset=p_sents)
-    # print(sents, sims)
+    sents, sims = bert_sim_search.search_in_range(query, 10, data_subset=p_sents)
+    print(sents, sims)
