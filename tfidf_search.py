@@ -43,7 +43,9 @@ def get_sentences_including(query_word, duplicate=True, return_idf=True):
 	sentences = row[2].split(' ')
 	sentences = [int(i) for i in sentences]
 	sentences_unique = list(set(sentences))
-	idf = math.log(2, sentence_count/len(sentences_unique))
+	idf = math.log(sentence_count/len(sentences_unique), 2)
+	logging.debug('#sentences: %5d, #sentences with %10s: %d, idf: %.4f' %
+					(sentence_count, query_word, len(sentences_unique), idf))
 	if not duplicate:
 		sentences = sentences_unique
 	if return_idf:
