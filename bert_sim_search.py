@@ -6,6 +6,7 @@ import logging
 from bert_serving.client import BertClient
 
 bc = BertClient()
+index = None
 
 FILE_VECS = 'data/SQuAD/sentenceVec.pkl'
 FILE_SENTENCE = 'data/SQuAD/sentences-remove-zeros.txt'
@@ -23,16 +24,22 @@ def load_data():
     print('Loading data done. ')
 
 
-def index_data():
+def index_data(data_subset=None):
+    """
+    Args:
+        data_subset (list of int): indices of data to be index
+    """
     global index
-    print('Indexing data... ')
+    logging.debug('Indexing data... ')
     d = len(vecs[0])
     index = faiss.IndexFlatIP(d)
     # print(index.is_trained)
     n_vecs = np.array(vecs)
+    if data_subset is not None:
+        n_vecs = n_vecs[data_subset]
     normalize_L2(n_vecs)
     index.add(n_vecs)
-    print('Indexing data done. ')
+    logging.debug('Indexing data done. ')
 
 
 def search_with_vectors(q_vectors, num_results):
@@ -67,11 +74,20 @@ def search(query, num_results):
     return r_sents[0], r_sims[0]
 
 
+def search_in_range(query, num_results, data_subset):
+    global index
+    index_bak = index
+    index_data(data_subset)
+    r_sents, r_sims = search(query, num_results)
+    index = index_bak
+    return np.array(data_subset)[r_sents], r_sims
+
+
 load_data()
-index_data()
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
-    r_sents, r_sims = search("She was listed among the most valuable people", 4)
+    # r_sents, r_sims = search_in_range("She was listed among the most influencial people", 2, [34115,27778,1337,22211])
+    r_sents, r_sims = search("She was listed among the most influencial people", 2)
     print(r_sents)
     print(r_sims)
     for i in r_sents:
