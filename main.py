@@ -1,10 +1,11 @@
 import query_type_client
 import tfidf_search
 import bert_sim_search
+import logging
 
-STRATEGY_TO = "PLAIN TF_IDF ONLY"
-STRATEGY_TB = "PLAIN TF_IDF + BERT"
-STRATEGY_WB = "WEIGHTED TF_IDF + BERT"
+STRATEGY_TO = "PLAIN TF-IDF ONLY"
+STRATEGY_TB = "PLAIN TF-IDF + BERT"
+STRATEGY_WB = "WEIGHTED TF-IDF + BERT"
 SEARCH_STRATEGY = STRATEGY_WB
 
 command_map = {
@@ -20,16 +21,25 @@ RESULT_NUM = 10
 
 all_sentences = bert_sim_search.sents
 
+
+def truncate(query):
+    return (query[:18] + '..') if len(query) > 20 else query
+
+
 def search_to(query):
+    print('Searching "%s" with PLAIN TF-IDF...' % truncate(query))
     sents, scores = tfidf_search.search(query, RESULT_NUM, weighted=False)
+    logging.debug('Results: \t%s, \nScore: \t%s' % (str(sents), str(scores)))
     return sents
 
 
 def search_tb(query):
     query_type = query_type_client.get_query_type(query)
     if query_type == query_type_client.QUERY_TYPE_WORDS:
+        print('Searching "%s" with PLAIN TF-IDF...' % truncate(query))
         sents, scores = tfidf_search.search(query, RESULT_NUM, weighted=False)
     elif query_type == query_type_client.QUERY_TYPE_SENTENCE:
+        print('Searching "%s" with PLAIN TF-IDF + BERT...' % truncate(query))
         p_sents, p_scores = tfidf_search.search(query, RESULT_NUM*10, weighted=False)
         sents, sims = bert_sim_search.search_in_range(query, RESULT_NUM, data_subset=p_sents)
     return sents
@@ -38,8 +48,10 @@ def search_tb(query):
 def search_wb(query):
     query_type = query_type_client.get_query_type(query)
     if query_type == query_type_client.QUERY_TYPE_WORDS:
+        print('Searching "%s" with weighted TF-IDF...' % truncate(query))
         sents, scores = tfidf_search.search(query, RESULT_NUM, weighted=True)
     elif query_type == query_type_client.QUERY_TYPE_SENTENCE:
+        print('Searching "%s" with weighted TF-IDF + BERT...' % truncate(query))
         p_sents, p_scores = tfidf_search.search(query, RESULT_NUM*10, weighted=True)
         sents, sims = bert_sim_search.search_in_range(query, RESULT_NUM, data_subset=p_sents)
     return sents
@@ -53,14 +65,14 @@ INSTRUCTIONS = """
     strategy for the following queries; a query is anything you would like to
     search.
 
-    A command must starts with '!'.
+    A command must start with '!'.
 
       Currently there are 3 different strategies for searching:
         !to | !tfidf-only    \t: using plain TF-IDF model only for results;
         !tb | !tfidf+bert    \t: using plainTF-IDF model for potential results and
-          refine them with BERT vectors similarity;
+          refine them with BERT vectors similarity when possible;
         !wb | !weighted+bert \t: using weighted TF-IDF model for potential results
-          and refine them with BERT vectors similarity.
+          and refine them with BERT vectors similarity when possible.
 
       You can also use commands for:
         !result-num <number> \t: changing maximum search result number;
@@ -75,7 +87,7 @@ def main():
     global SEARCH_STRATEGY
     global RESULT_NUM
     while True:
-        query = input('Input anything >> ')
+        query = input('Input anything >> ').strip()
         if query == '':
             continue
         elif query == '!exit':
@@ -106,4 +118,5 @@ def main():
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG)
     main()

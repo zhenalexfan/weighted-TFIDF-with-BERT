@@ -39,11 +39,11 @@ def get_tokens_in(query):
 	words = [word.lower() for word in words]
 	return words
 
-def get_sentences_including(query_word, duplicate=True, return_idf=True):
+def get_sentences_including(query_word, duplicate=True):
 	cursor.execute('select * from %s where word="%s"' % (MYSQL_WORDS_TABLE, query_word))
 	row = cursor.fetchall()
 	if row is None or len(row) == 0:
-		return [], float('nan')
+		return [], set([]), float('nan')
 	else:
 		row = row[0]
 	sentences = row[2].split(' ')
@@ -57,10 +57,7 @@ def get_sentences_including(query_word, duplicate=True, return_idf=True):
 					(sentence_count, query_word, len(sentences_unique), idf))
 	if not duplicate:
 		sentences = sentences_unique
-	if return_idf:
-		return sentences, q_sents_set, idf
-	else:
-		return sentences, q_sents_set
+	return sentences, q_sents_set, idf
 
 
 def search(query, num_results, bool_tf=True, weighted=True):
@@ -77,7 +74,7 @@ def search(query, num_results, bool_tf=True, weighted=True):
 	sentence_score_map = {}
 	qwords = get_tokens_in(query)
 	for qword in qwords:
-		sentences, q_sents_set, idf = get_sentences_including(qword, duplicate=not bool_tf, return_idf=True)
+		sentences, q_sents_set, idf = get_sentences_including(qword, duplicate=not bool_tf)
 		logging.debug("qword: %-10s, \tidf: %.4f, \ttop 5: %s" % (qword, idf, str(sentences[:5])))
 		for sentence in sentences:
 			if sentence not in sentence_score_map.keys():
@@ -94,7 +91,7 @@ def search(query, num_results, bool_tf=True, weighted=True):
 
 if __name__ == '__main__':
 	logging.basicConfig(level=logging.DEBUG)
-	results = search("hello", 3, weighted=True)
+	results = search("what kind of songs would a solo panist write?", 3, weighted=True)
 	# results = search("The competition began on August 2, 1955, when the Soviet Union responded", 3, weighted=True)
 	print(results)
 	print()
