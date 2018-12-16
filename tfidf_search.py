@@ -2,20 +2,30 @@ import mysql.connector
 import math
 import logging
 
-dataset = "original"
-# dataset = "SQuAD"
+# dataset = "original"
+dataset = "SQuAD"
 
-MYSQL_HOST = 'localhost'
-MYSQL_USER = 'root'
-MYSQL_PASSWD = '12345678'
-MYSQL_DB = 'cs510'
+if dataset == "original":
+	MYSQL_HOST = 'localhost'
+	MYSQL_USER = 'root'
+	MYSQL_PASSWD = '12345678'
+	MYSQL_DB = 'cs510'
+	MYSQL_SENTS_TABLE = 'sentences'
+	MYSQL_WORDS_TABLE = 'words'
+elif dataset == "SQuAD":
+	MYSQL_HOST = 'localhost'
+	MYSQL_USER = 'root'
+	MYSQL_PASSWD = '12345678'
+	MYSQL_DB = 'squad_inv_index'
+	MYSQL_SENTS_TABLE = 'new_sentences'
+	MYSQL_WORDS_TABLE = 'new_words'
 
 cnx = mysql.connector.connect(host=MYSQL_HOST, user=MYSQL_USER, passwd=MYSQL_PASSWD, database=MYSQL_DB)
 cursor = cnx.cursor()
-cursor.execute('select count(id) from sentences')
+cursor.execute('select count(*) from %s' % MYSQL_SENTS_TABLE)
 sentence_count = cursor.fetchall()[0][0]
 # print('Document size: %d' % sentence_count)
-cursor.execute('select word, count from words')
+cursor.execute('select word, count from %s' % MYSQL_WORDS_TABLE)
 words = cursor.fetchall()
 # print('Vocabulory size: %d' % len(words))
 
@@ -24,23 +34,22 @@ def get_tokens_in(query):
 	# TODO: use spacy
 
 def get_sentences_including(query_word, duplicate=True, return_idf=True):
-	if dataset == "original":
-		cursor.execute('select * from words where word="%s"' % query_word)
-		row = cursor.fetchall()
-		if row is None or len(row) == 0:
-			return [], float('nan')
-		else:
-			row = row[0]
-		sentences = row[2].split(' ')
-		sentences = [int(i) for i in sentences]
-		sentences_unique = list(set(sentences))
-		idf = math.log(2, sentence_count/len(sentences_unique))
-		if not duplicate:
-			sentences = sentences_unique
-		if return_idf:
-			return sentences, idf
-		else:
-			return sentences
+	cursor.execute('select * from %s where word="%s"' % (MYSQL_WORDS_TABLE, query_word))
+	row = cursor.fetchall()
+	if row is None or len(row) == 0:
+		return [], float('nan')
+	else:
+		row = row[0]
+	sentences = row[2].split(' ')
+	sentences = [int(i) for i in sentences]
+	sentences_unique = list(set(sentences))
+	idf = math.log(2, sentence_count/len(sentences_unique))
+	if not duplicate:
+		sentences = sentences_unique
+	if return_idf:
+		return sentences, idf
+	else:
+		return sentences
 
 
 def search(query, num_results, bool_tf=True):
@@ -74,13 +83,13 @@ def search(query, num_results, bool_tf=True):
 
 if __name__ == '__main__':
 	logging.basicConfig(level=logging.DEBUG)
-	results = search("How to handle a 1.5 year old when hitting?", 3)
+	results = search("The competition began on August 2, 1955, when the Soviet Union responded", 3)
 	print(results)
 	print()
 	for i, r in enumerate(results[0]):
 		print('***** Result %d *****' % i)
 		cursor.execute(
-			'select sentences from sentences where id = %d' % r)
+			'select sentence from %s where sentence_id = %d' % (MYSQL_SENTS_TABLE, r))
 		ss = cursor.fetchall()
-		print([x[0] for x in ss])
+		print([x[0].encode('utf-8') for x in ss])
 		print()

@@ -15,13 +15,13 @@ FILE_SENTENCE = 'data/SQuAD/sentences-remove-zeros.txt'
 def load_data():
     global vecs
     global sents
-    print('Loading sentences and vectors. This may take a few minutes... ')
+    logging.debug('Loading sentences and vectors. This may take a few minutes... ')
     with open(FILE_VECS, 'rb') as f:
         vecs = joblib.load(f)
     with open(FILE_SENTENCE, 'r', encoding='utf8') as f:
         sents = f.readlines()
     logging.debug('vecs shape: %s' % str(np.shape(vecs)))
-    print('Loading data done. ')
+    logging.debug('Loading data done. ')
 
 
 def index_data(data_subset=None):
@@ -83,12 +83,15 @@ def search_in_range(query, num_results, data_subset):
     return np.array(data_subset)[r_sents], r_sims
 
 
-load_data()
+
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
+    load_data()
     # r_sents, r_sims = search_in_range("She was listed among the most influencial people", 2, [34115,27778,1337,22211])
     r_sents, r_sims = search("She was listed among the most influencial people", 2)
     print(r_sents)
     print(r_sims)
     for i in r_sents:
         print(sents[i].encode('utf-8'))
+else:
+    load_data()
