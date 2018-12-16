@@ -87,7 +87,7 @@ def main():
     global SEARCH_STRATEGY
     global RESULT_NUM
     while True:
-        query = input('Input anything >> ').strip()
+        query = input('Input anything >> ').strip().lower()
         if query == '':
             continue
         elif query == '!exit':
