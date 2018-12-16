@@ -1,5 +1,6 @@
 .DS_Store
-__pycache__/*
-bert/*
-data/*
+__pycache__/**
+archived/**
+bert/**
+data/**
 .ipynb_checkpoints/*

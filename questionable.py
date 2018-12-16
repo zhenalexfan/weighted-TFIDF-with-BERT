@@ -34,8 +34,11 @@ def get_label(idx):
 
 def get_questionable_tokens(idx):
     tokens = nlp(sents[idx])
-    text_tokens = [t.text.lower() for t in tokens]
-    return text_tokens
+    text_questionable_tokens = []
+    for i, t in enumerate(tokens):
+        if (labels[idx][i] == 1):
+            text_questionable_tokens.append(t.text.lower())
+    return text_questionable_tokens
 
 
 def is_in_questionable_part(idx, query_word):
