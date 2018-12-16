@@ -3,6 +3,7 @@ import grpc
 
 import query_pb2_grpc
 import query_pb2
+import logging
 
 QUERY_TYPE_WORDS = 0
 QUERY_TYPE_SENTENCE = 1
@@ -14,8 +15,9 @@ def get_query_type(query):
     with grpc.insecure_channel('localhost:50051') as channel:
         stub = query_pb2_grpc.SentQueryStub(channel)
         response = stub.ReturnResult(query_pb2.Query(user_input=query))
-    print("Client received: " + response.sent_type)
+    logging.debug("Client received: " + response.sent_type)
     return QUERY_TYPE_WORDS if "words" == response.sent_type else QUERY_TYPE_SENTENCE
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG)
     get_query_type("who is the ceo of apple")

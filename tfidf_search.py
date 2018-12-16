@@ -1,6 +1,5 @@
 import mysql.connector
 import math
-import questionable
 import spacy
 import logging
 import re
@@ -51,7 +50,7 @@ def get_sentences_including(query_word, duplicate=True, return_idf=True):
 	sentences = [int(i) for i in sentences]
 	sentences_unique = list(set(sentences))
 	q_sents = row[3].split(' ')
-	q_sents = [int(i) for i in q_sents]
+	q_sents = [int(i) for i in q_sents if i != '']
 	q_sents_set = set(q_sents)
 	idf = math.log(sentence_count/len(sentences_unique), 2)
 	logging.debug('#sentences: %5d, #sentences with %10s: %d, idf: %.4f' %
@@ -95,7 +94,8 @@ def search(query, num_results, bool_tf=True, weighted=True):
 
 if __name__ == '__main__':
 	logging.basicConfig(level=logging.DEBUG)
-	results = search("The competition began on August 2, 1955, when the Soviet Union responded", 3, weighted=True)
+	results = search("hello", 3, weighted=True)
+	# results = search("The competition began on August 2, 1955, when the Soviet Union responded", 3, weighted=True)
 	print(results)
 	print()
 	for i, r in enumerate(results[0]):
