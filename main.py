@@ -48,10 +48,10 @@ def search_tb(query):
 def search_wb(query):
     query_type = query_type_client.get_query_type(query)
     if query_type == query_type_client.QUERY_TYPE_WORDS:
-        print('Searching "%s" with weighted TF-IDF...' % truncate(query))
+        print('Searching "%s" with WEIGHTED TF-IDF...' % truncate(query))
         sents, scores = tfidf_search.search(query, RESULT_NUM, weighted=True)
     elif query_type == query_type_client.QUERY_TYPE_SENTENCE:
-        print('Searching "%s" with weighted TF-IDF + BERT...' % truncate(query))
+        print('Searching "%s" with WEIGHTED TF-IDF + BERT...' % truncate(query))
         p_sents, p_scores = tfidf_search.search(query, RESULT_NUM*10, weighted=True)
         sents, sims = bert_sim_search.search_in_range(query, RESULT_NUM, data_subset=p_sents)
     return sents
@@ -113,8 +113,11 @@ def main():
                 sents = search_wb(query)
             print()
 
-            for i, sent in enumerate(sents):
-                print('%3d. %s' % (i + 1, all_sentences[sent]))
+            if len(sents) == 0:
+                print('Ooops, nothing found.\n')
+            else:
+                for i, sent in enumerate(sents):
+                    print('%3d. %s' % (i + 1, all_sentences[sent]))
 
 
 if __name__ == '__main__':

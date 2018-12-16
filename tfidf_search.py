@@ -91,7 +91,7 @@ def search(query, num_results, bool_tf=True, weighted=True):
 
 if __name__ == '__main__':
 	logging.basicConfig(level=logging.DEBUG)
-	results = search("what kind of songs would a solo panist write?", 3, weighted=True)
+	results = search("Where are the music companies located?", 3, weighted=True)
 	# results = search("The competition began on August 2, 1955, when the Soviet Union responded", 3, weighted=True)
 	print(results)
 	print()
