@@ -50,15 +50,18 @@ def get_sentences_including(query_word, duplicate=True, return_idf=True):
 	sentences = row[2].split(' ')
 	sentences = [int(i) for i in sentences]
 	sentences_unique = list(set(sentences))
+	q_sents = row[3].split(' ')
+	q_sents = [int(i) for i in q_sents]
+	q_sents_set = set(q_sents)
 	idf = math.log(sentence_count/len(sentences_unique), 2)
 	logging.debug('#sentences: %5d, #sentences with %10s: %d, idf: %.4f' %
 					(sentence_count, query_word, len(sentences_unique), idf))
 	if not duplicate:
 		sentences = sentences_unique
 	if return_idf:
-		return sentences, idf
+		return sentences, q_sents_set, idf
 	else:
-		return sentences
+		return sentences, q_sents_set
 
 
 def search(query, num_results, bool_tf=True, weighted=True):
@@ -75,12 +78,12 @@ def search(query, num_results, bool_tf=True, weighted=True):
 	sentence_score_map = {}
 	qwords = get_tokens_in(query)
 	for qword in qwords:
-		sentences, idf = get_sentences_including(qword, duplicate=not bool_tf, return_idf=True)
+		sentences, q_sents_set, idf = get_sentences_including(qword, duplicate=not bool_tf, return_idf=True)
 		logging.debug("qword: %-10s, \tidf: %.4f, \ttop 5: %s" % (qword, idf, str(sentences[:5])))
 		for sentence in sentences:
 			if sentence not in sentence_score_map.keys():
 				sentence_score_map[sentence] = 0
-			coeff = 2 if (weighted and questionable.is_in_questionable_part(sentence, qword)) else 1
+			coeff = 2 if (weighted and (sentence in q_sents_set)) else 1
 			sentence_score_map[sentence] += coeff * idf
 	result = sorted(sentence_score_map.items(), key=lambda kv: kv[1], reverse=True)
 	if num_results == 0:
@@ -92,7 +95,7 @@ def search(query, num_results, bool_tf=True, weighted=True):
 
 if __name__ == '__main__':
 	logging.basicConfig(level=logging.DEBUG)
-	results = search("The competition began on August 2, 1955, when the Soviet Union responded", 3, weighted=False)
+	results = search("The competition began on August 2, 1955, when the Soviet Union responded", 3, weighted=True)
 	print(results)
 	print()
 	for i, r in enumerate(results[0]):
