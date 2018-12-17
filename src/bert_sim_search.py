@@ -8,8 +8,8 @@ from bert_serving.client import BertClient
 bc = BertClient()
 index = None
 
-FILE_VECS = 'data/SQuAD/sentenceVec.pkl'
-FILE_SENTENCE = 'data/SQuAD/sentences-remove-zeros.txt'
+FILE_VECS = '../data/SQuAD/sentenceVec.pkl'
+FILE_SENTENCE = '../data/SQuAD/sentences-remove-zeros.txt'
 
 
 def load_data():

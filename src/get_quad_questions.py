@@ -7,7 +7,7 @@ from termcolor import colored
 
 # load data
 data = []
-with open('data/train-v2.0.json') as f:
+with open('../data/train-v2.0.json') as f:
 	data = json.load(f)['data']
 
 questions = []
@@ -24,7 +24,7 @@ for idx, datum in enumerate(data[:]):
 
 def save_sentences(filename, sentences_):
 	print('Writing %d sentences to %s...' % (len(sentences_), filename))
-	with open('data/SQuAD/%s.txt' % filename, 'w', encoding='utf-8') as f:
+	with open('../data/SQuAD/%s.txt' % filename, 'w', encoding='utf-8') as f:
 		for item in sentences_:
 			f.write(item + '\n')
 

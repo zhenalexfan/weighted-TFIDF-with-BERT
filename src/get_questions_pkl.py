@@ -3,9 +3,9 @@ import joblib
 import pickle
 import numpy as np
 
-FILE_VEC = 'data/res.pkl'
-FILE_SUBSENTENCE = 'data/extend_mask_input (1).txt'
-FILE_ALL_SENTENCE = 'data/All Sentences.txt'
+FILE_VEC = '../data/res.pkl'
+FILE_SUBSENTENCE = '../data/extend_mask_input (1).txt'
+FILE_ALL_SENTENCE = '../data/All Sentences.txt'
 
 def load_data():
 	global vec
@@ -51,7 +51,7 @@ substc_all_questions_indices = []
 for q in questions:
 	idx_in_all_sentences = q[0] - 1
 	substc_all_questions_indices.extend(stc_substc_map[idx_in_all_sentences])
-# now substc_all_questions_indices contains all the indices for questions 
+# now substc_all_questions_indices contains all the indices for questions
 # corresponding to data/extend_mask_input.txt and res.pkl
 
 header = 'This file includes indices for questions in `res.pkl` or `extend_mask_input (1).txt`'

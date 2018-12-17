@@ -5,9 +5,9 @@ import numpy as np
 
 nlp = spacy.load('en')
 
-with open('data/SQuAD/sentences-remove-zeros.txt', 'r', encoding='utf8') as f:
+with open('../data/SQuAD/sentences-remove-zeros.txt', 'r', encoding='utf8') as f:
     sents = f.read().split('\n')
-with open('data/SQuAD/labels-remove-zeros.txt', 'r') as f:
+with open('../data/SQuAD/labels-remove-zeros.txt', 'r') as f:
     labels = f.read().split('\n')
     labels = [line.strip().split(' ') for line in labels]
     for i in range(len(labels)):

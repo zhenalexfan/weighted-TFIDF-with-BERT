@@ -11,7 +11,7 @@ SENTENCE_MAX_LEN = 128
 
 # load data
 data = []
-with open('data/train-v2.0.json') as f:
+with open('../data/train-v2.0.json') as f:
 	data = json.load(f)['data']
 
 # tokenizer for splitting sentences
@@ -83,7 +83,7 @@ def save_sentences(filename, sentences_):
 
 def save_labels(filename, labels_):
 	print('Writing %d sequences to %s...' % (len(labels_), filename))
-	with open('data/SQuAD/%s.txt' % filename, 'w') as f:
+	with open('../data/SQuAD/%s.txt' % filename, 'w') as f:
 		for l in labels_:
 			f.write(' '.join(str(x) for x in l) + '\n')
 
