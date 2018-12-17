@@ -5,6 +5,7 @@ import logging
 import argparse
 
 STRATEGY_TO = "PLAIN TF-IDF ONLY"
+STRATEGY_WT = "WEIGHTED TF-IDF ONLY"
 STRATEGY_TB = "PLAIN TF-IDF + BERT"
 STRATEGY_WB = "WEIGHTED TF-IDF + BERT"
 SEARCH_STRATEGY = STRATEGY_WB
@@ -12,6 +13,8 @@ SEARCH_STRATEGY = STRATEGY_WB
 command_map = {
     'to': STRATEGY_TO,
     'tfidf-only': STRATEGY_TO,
+    'wt': STRATEGY_WT,
+    'weighted-tfidf': STRATEGY_WT,
     'tb': STRATEGY_TB,
     'tfidf+bert': STRATEGY_TB,
     'wb': STRATEGY_WB,
@@ -30,6 +33,13 @@ def truncate(query):
 def search_to(query):
     print('Searching "%s" with PLAIN TF-IDF...' % truncate(query))
     sents, scores = tfidf_search.search(query, RESULT_NUM, weighted=False)
+    logging.debug('Results: \t%s, \nScore: \t%s' % (str(sents), str(scores)))
+    return sents
+
+
+def search_wt(query):
+    print('Searching "%s" with PLAIN TF-IDF...' % truncate(query))
+    sents, scores = tfidf_search.search(query, RESULT_NUM, weighted=True)
     logging.debug('Results: \t%s, \nScore: \t%s' % (str(sents), str(scores)))
     return sents
 
@@ -114,6 +124,8 @@ def main():
         else:
             if SEARCH_STRATEGY == STRATEGY_TO:
                 sents = search_to(query)
+            if SEARCH_STRATEGY == STRATEGY_WT:
+                sents = search_wt(query)
             if SEARCH_STRATEGY == STRATEGY_TB:
                 sents = search_tb(query)
             if SEARCH_STRATEGY == STRATEGY_WB:
