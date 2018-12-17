@@ -38,7 +38,7 @@ def search_to(query):
 
 
 def search_wt(query):
-    print('Searching "%s" with PLAIN TF-IDF...' % truncate(query))
+    print('Searching "%s" with WEIGHTED TF-IDF...' % truncate(query))
     sents, scores = tfidf_search.search(query, RESULT_NUM, weighted=True)
     logging.debug('Results: \t%s, \nScore: \t%s' % (str(sents), str(scores)))
     return sents
