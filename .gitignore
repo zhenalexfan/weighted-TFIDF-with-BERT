@@ -4,7 +4,7 @@ archived/**
 bert/**
 data/**
 src/test*.py
-.ipynb_checkpoin·ts/*
+.ipynb_checkpoints/*
 
 *.aux
 *.log
