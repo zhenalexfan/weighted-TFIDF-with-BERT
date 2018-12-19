@@ -1,0 +1,73 @@
+\documentclass[sigconf]{acmart}
+\settopmatter{printacmref=false} % Removes citation information below abstract
+\renewcommand\footnotetextcopyrightpermission[1]{} % removes footnote with conference information in first column
+\pagestyle{plain} % removes running headers
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{tikz}
+\usepackage{tikz-qtree}
+\usetikzlibrary{shapes,arrows}
+\usepackage{adjustbox}
+\usepackage{verbatim}
+\usepackage{booktabs} % For formal tables
+\usepackage{listings}
+\usepackage{listingsutf8}
+\lstset{
+  basicstyle=\ttfamily,
+  columns=fullflexible,
+  frame=single,
+  breaklines=true,
+  inputencoding=utf8,
+  extendedchars=false,
+  postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[final]{pdfpages}
+\usepackage{float}
+
+
+\begin{document}
+\title{Improved Semantic Search based on Weighted TF-IDF \& BERT}
+
+
+\author{Yuxiang Li}
+\affiliation{%
+  \institution{University of Illinois at Urbana-Champaign}
+  \city{Champaign}
+  \state{Illinois}
+}
+\email{yl48@illinois.edu}
+
+\author{Yuxin Xiao}
+\affiliation{%
+  \institution{University of Illinois at Urbana-Champaign}
+  \city{Champaign}
+  \state{Illinois}
+}
+\email{yuxinx2@illinois.edu}
+
+\author{Zhen Fan}
+\affiliation{%
+  \institution{University of Illinois at Urbana-Champaign}
+  \city{Champaign}
+  \state{Illinois}
+}
+\email{zhenfan3@illinois.edu}
+
+
+\begin{abstract}
+We present an improved semantic search approach based on a weighted TF-IDF method and the BERT natural language model. We motivate the choice of a weighted TF-IDF method via an intuition that the questionable spans in a document summarize the document's topics and hence, should be placed greater emphasis when calculating the TF-IDF score. The use of the BERT natural language model is to complement the weakness of the TF-IDF framework in understanding the true semantic meaning of a document. Therefore, our model encodes a document's questional spans and true semantics. It scales effectively in the size of the dataset. In a number of semantic search experiments on question-answering datasets, we demonstrate that our approach outperforms existing related methods by a significant margin.
+\end{abstract}
+
+
+\maketitle
+\input{body}
+% \input{samplebody-conf.tex}
+
+% \bibliographystyle{ACM-Reference-Format}
+% \bibliography{bibliography.bib}
+
+
+\end{document}

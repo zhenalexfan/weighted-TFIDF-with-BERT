@@ -1,0 +1,23 @@
+
+\tikzstyle{decision} = [diamond, draw,
+    text width=4.5em, text badly centered, node distance=2cm, inner sep=0pt]
+\tikzstyle{block} = [rectangle, draw,
+    text width=5em, text centered, rounded corners, node distance=3cm, minimum height=4em]
+\tikzstyle{line} = [draw, -latex']
+\tikzstyle{cloud} = [draw, ellipse, node distance=3cm,
+    text width=5em, text centered, minimum height=2em]
+
+
+\begin{tikzpicture}[node distance = 2cm, auto]
+    % Place nodes
+    \node [block] (doc) {documents};
+    \node [block, below of=doc, node distance=2.2cm] (model) {trained BiLSTM-CRF model};
+    \node [block, right of=model] (qs) {questionable spans};
+    \node [block, right of=qs] (wtf) {Weighted TF--IDF};
+    \node [above of=wtf, text width=5em, text centered, node distance=2.2cm] (nowhere) {query};
+    % Draw edges
+    \path [line] (doc) -- (model);
+    \path [line] (model) -- (qs);
+    \path [line] (qs) -- (wtf);
+    \path [line, dashed] (nowhere) -- (wtf);
+\end{tikzpicture}

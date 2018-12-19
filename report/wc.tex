@@ -1,0 +1,15 @@
+\begin{tikzpicture}
+[
+every edge/.style={in=270, out=270, draw=black!250}
+]
+\tikzset{frontier/.style={distance from root=80pt}}
+\Tree [.ROOT [.NP [.NN \node (banana) {banana}; ]
+                  [.NN \node (apple) {apple}; ]
+                  [.NN \node (color) {color}; ]
+             ]
+      ]
+
+\path[->]
+([xshift=-1mm, yshift=0mm] color.south)	edge[looseness=0.50] node[below] {\scriptsize compound}	([xshift=1mm, yshift=0mm] apple.south)
+([xshift=-1mm, yshift=-2mm] color.south)	edge[looseness=1.00] node[below] {\scriptsize compound}	([xshift=1mm, yshift=0mm] banana.south);
+\end{tikzpicture}

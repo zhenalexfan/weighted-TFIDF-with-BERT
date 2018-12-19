@@ -1,0 +1,34 @@
+
+\tikzstyle{decision} = [diamond, draw,
+    text width=4.5em, text badly centered, node distance=2cm, inner sep=0pt]
+\tikzstyle{block} = [rectangle, draw,
+    text width=5em, text centered, rounded corners, node distance=2cm, minimum height=4em]
+\tikzstyle{line} = [draw, -latex']
+\tikzstyle{cloud} = [draw, ellipse, node distance=3cm,
+    text width=5em, text centered, minimum height=2em]
+
+
+\begin{tikzpicture}[node distance = 2cm, auto]
+    % Place nodes
+    \node [block] (init) {query};
+    \node [decision, below of=init] (syntax) {syntax analysis};
+    \node [cloud, below of=syntax, node distance=2cm] (words) {sequence of words};
+    \node [cloud, right of=syntax] (sent) {sentence};
+    \node [block, below of=words] (word-wtf) {Weighted TF--IDF};
+    \node [block, below of=word-wtf] (word-results) {results};
+    \node [block, below of=sent] (sent-wtf) {Weighted TF--IDF};
+    \node [block, below of=sent-wtf] (p-sent-results) {potential results};
+    \node [block, right of=p-sent-results, node distance=2.5cm] (bert) {BERT};
+    \node [block, below of=bert] (sent-results) {results};
+    % Draw edges
+    \path [line] (init) -- (syntax);
+    \path [line] (syntax) -- (words);
+    \path [line] (syntax) -- (sent);
+    \path [line] (words) -- (word-wtf);
+    \path [line] (word-wtf) -- (word-results);
+    \path [line] (sent) -- (sent-wtf);
+    \path [line] (sent-wtf) -- (p-sent-results);
+    \path [line] (sent) -| (bert);
+    \path [line] (p-sent-results) -- (bert);
+    \path [line] (bert) -- (sent-results);
+\end{tikzpicture}

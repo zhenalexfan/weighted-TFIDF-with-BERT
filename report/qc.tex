@@ -1,0 +1,33 @@
+\begin{tikzpicture}
+[
+every edge/.style={in=270, out=270, draw=black!250}
+]
+\tikzset{frontier/.style={distance from root=250pt}}
+\Tree [.ROOT [.SBARQ [.WHNP [.WP \node (what) {what}; ] ]
+                     [.SQ [.VBZ \node (is) {is}; ]
+                          [.NP [.NP [.DT \node (the) {the}; ]
+                                    [.NN \node (color) {color}; ]
+                               ]
+                               [.PP [.IN \node (of) {of}; ]
+                                    [.NP [.NP [.NN \node (banana) {banana}; ] ]
+                                         [.CC \node (and) {and}; ]
+                                         [.NP [.NN \node (apple) {apple}; ] ]
+                                    ]
+                               ]
+                          ]
+                     ]
+                     [. . \node (qm) {?}; ]
+             ]
+      ]
+
+\path[->]
+([xshift=1mm, yshift=0mm] what.south)	edge[looseness=0.50] node[below] {\scriptsize cop}	([xshift=-1mm, yshift=0mm] is.south)
+([xshift=-1mm, yshift=0mm] color.south)	edge[looseness=0.50] node[below] {\scriptsize det}	([xshift=1mm, yshift=0mm] the.south)
+([xshift=-1mm, yshift=0mm] banana.south)	edge[looseness=0.50] node[below] {\scriptsize case}	([xshift=1mm, yshift=0mm] of.south)
+([xshift=1mm, yshift=0mm] banana.south)	edge[looseness=0.50] node[below] {\scriptsize cc}	([xshift=-1mm, yshift=0mm] and.south)
+([xshift=1mm, yshift=-2mm] what.south)	edge[looseness=1.00] node[below] {\scriptsize nsubj}	([xshift=-1mm, yshift=-2mm] color.south)
+([xshift=1mm, yshift=0mm] color.south)	edge[looseness=1.00] node[below] {\scriptsize nmod:of}	([xshift=-1mm, yshift=-2mm] banana.south)
+([xshift=1mm, yshift=-2mm] banana.south)	edge[looseness=1.00] node[below] {\scriptsize conj:and}	([xshift=-1mm, yshift=0mm] apple.south)
+([xshift=1mm, yshift=-2mm] color.south)	edge[looseness=1.00] node[below] {\scriptsize nmod:of}	([xshift=-1mm, yshift=-2mm] apple.south)
+([xshift=1mm, yshift=-4mm] what.south)	edge[looseness=1.03] node[below] {\scriptsize punct}	([xshift=-1mm, yshift=0mm] qm.south);
+\end{tikzpicture}

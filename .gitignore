@@ -4,4 +4,12 @@ archived/**
 bert/**
 data/**
 src/test*.py
-.ipynb_checkpoints/*
+.ipynb_checkpoin·ts/*
+
+*.aux
+*.log
+*.fls
+*.synctex.gz
+*.bbl
+*.fdb_latexmk
+*.out

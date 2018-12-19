@@ -1,0 +1,18 @@
+Input anything >> What is Yale famous for
+Searching "what is yale famou.." with WEIGHTED TF-IDF + BERT...
+  1. The Boston Globe wrote that "if there's one school that can lay claim to educating the nation's top national leaders over the past three decades, it's Yale."
+  2. When challenged on the distinction between Dukakis's Harvard connection and his own Yale background, he said that, unlike Harvard, Yale's reputation was "so diffuse, there isn't a symbol, I don't think, in the Yale situation, any symbolism in it" and said Yale did not share Harvard's reputation for "liberalism and elitism".
+  3. Yale is noted for its largely Collegiate Gothic campus as well as for several iconic modern buildings commonly discussed in architectural history survey courses: Louis Kahn's Yale Art Gallery and Center for British Art, Eero Saarinen's Ingalls Rink and Ezra Stiles and Morse Colleges, and Paul Rudolph's Art & Architecture Building.
+  4. His father is a black Kenyan," in a column entitled "What Obama Isn't: Black Like Me."
+  5. What he means is he dislikes having his metaphysics criticized."
+
+Input anything >> !to
+You have switched to PLAIN TF-IDF ONLY.
+
+Input anything >> What is Yale famous for
+Searching "what is yale famou.." with PLAIN TF-IDF...
+  1. Some public rituals could be conducted only by women, and women formed what is perhaps Rome's most famous priesthood, the state-supported Vestals, who tended Rome's sacred hearth for centuries, until disbanded under Christian domination.
+  2. The famous tirade of Lucretius, the Epicurean rationalist, against what is usually translated as "superstition" was in fact aimed at excessive religio.
+  3. His most famous remark on religion is that "religion is what the individual does with his own solitariness ... and if you are never solitary, you are never religious."
+  4. Between 10 and 17 October 1757, a Hungarian general, Count András Hadik, serving in the Austrian army, executed what may be the most famous hussar action in history.
+  5. The Reverend Ezra Stiles, president of the College from 1778 to 1795, brought with him his interest in the Hebrew language as a vehicle for studying ancient Biblical texts in their original language  as was common in other schools , requiring all freshmen to study Hebrew  in contrast to Harvard, where only upperclassmen were required to study the language  and is responsible for the Hebrew phrase Urim and Thummim on the Yale seal.
